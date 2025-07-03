@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Extractor 999
+{% endblock %}
+
+{% block main %}
+    <h1>Extract Specific Pages from PDF</h1>
+
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label for="pdf">Upload your PDF to extract:</label>
+        <input type="file" id="pdf" name="file[]" accept=".pdf" multiple required><br><br>
+        <input type="submit" value="Upload">
+    </form>
+
+    <h2>Uploaded Files:</h2>
+    {% if files %}
+            {% for file in files %}
+                <div class="file-item">
+                    <span>{{ loop.index }}. </span>
+                    <a href="{{ url_for('uploaded_file', filename=file) }}" target="_blank">{{ file }}</a>
+                    <form action="{{ url_for('delete_file', filename=file) }}" method="POST" style="display:inline;">
+                        <button class="remove" type="submit">Remove</button>
+                    </form>
+                </div>
+            {% endfor %}
+    {% else %}
+        <p>No files uploaded yet.</p>
+    {% endif %}
+
+    {% if files | length == 1 %}
+    <form id="extract-form" action="/extract_pages" method="POST">
+        <!-- Hidden input field to send the file name -->
+        <input type="hidden" name="file_name" value="{{ files[0] }}">
+
+        <label for="page-numbers">Enter page numbers to extract (comma-separated):</label>
+        <input type="text" id="page-numbers" name="page_numbers" required placeholder="Example: 1, 2, 3, 5"><br><br>
+
+        <button type="submit">Extract Pages</button>
+    </form>
+    {% else %}
+        <p>Upload ONE PDF only to start extraction.</p>
+    {% endif %}
+{% endblock %}
+

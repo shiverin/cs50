@@ -1,0 +1,119 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <div class="listings_whole">
+        <div class="listings_start">
+            <div class="listings_row">
+                <h2>Listing: {{listing.title}}</h2>
+                {% if user == listing.owner %}
+                {% if listing.is_active %}
+                    <form method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                        <button type="submit" name="close_auction" class="btn btn-primary" style="cursor:pointer; font-size: 24px;" aria-label="close">
+                            Close auction
+                        </button>
+                    </form>
+                {% endif %}
+                {% endif %}
+            </div>
+        {% if listing.category %}
+        <h3 style="color:grey;">Category: {{listing.category}}</h3>
+        {% endif %}
+        <div>
+        <span>Click here to add to watchlist ---></span>
+        <form method="POST" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+            <button type="submit" style="background:none; border:none; cursor:pointer; font-size: 24px;" aria-label="Toggle Watchlist">
+            {% if is_watched %}
+                &#9733;
+            {% else %}
+                &#9734;
+            {% endif %}
+            </button>
+        </form>
+        </div>
+        </div>
+    <div class="container-fluid p-3 bg-light listingsa">
+        <div class="listings_a">
+        {% if listing.url %}
+            <img src="{{listing.url}}" alt="{{ listing.title }}">
+        {% else %}
+            <img src="{% static 'auctions/place.svg' %}" alt="Default image">
+        {% endif %}
+        </div>
+    </div>
+    <div class="listings_b">
+        <small>Description: {{listing.description}}</small>
+        <div><strong style="font-size: 25px;">${{ listing.current_price }}</strong></div>
+        <div>Created on {{ listing.created_at}}</div>
+    </div>
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if listing.is_active %}
+    <div class="container-fluid p-3 bg-light listingsb">
+        <div class="listings_c">
+            {% if listing.highest_bid_username %}
+            Current highest bid is ${{listing.current_price}} by <strong style="font-size: 25px; color:dark;">{{ listing.highest_bid_username }}</strong>
+            {% else %}
+            No bid yet
+            {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <form autocomplete="off" method="post" class="p-3">
+        {% csrf_token %}
+            <div class="form-group mb-3">
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <label for="bid">Bid:</label>
+                <input type="number" name="bid" min="0" step="0.01" required>
+            </div>
+             <button type="submit" class="btn btn-primary">Place bid</button>
+        </form>
+        {% else %}
+        (Sign in to bid)
+        {% endif %}
+    </div>
+    {% endif %}
+    <h2>Comments:</h2>
+        <ul>
+        {% for comment in comments %}
+        <li>
+            {{comment}}
+        </li>
+        {% empty %}
+        <div>currently no comments</div>
+        {% endfor %}
+        </ul>
+        {% if user.is_authenticated %}
+    <div class="container-fluid p-3 bg-light listingsc">
+        <form autocomplete="off" method="post" class="p-3">
+        {% csrf_token %}
+            <div class="form-group mb-3">
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <label for="comment">new comment:</label>
+                <textarea
+                    name="comment"
+                    class="form-control"
+                    placeholder="Enter comment"
+                    rows="6"
+                    required
+                ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Comment</button>
+        </form>
+    </div>
+        {% else %}
+        (Sign in to comment)
+        {% endif %}
+    </div>
+{% endblock %}
+

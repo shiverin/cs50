@@ -1,0 +1,114 @@
+/* Size for brand */
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+/* Colors for brand */
+nav .navbar-brand .blue
+{
+    color: #537fbe;
+}
+nav .navbar-brand .red
+{
+    color: #ea433b;
+}
+nav .navbar-brand .yellow
+{
+    color: #f5b82e;
+}
+nav .navbar-brand .green
+{
+    color: #2e944b;
+}
+.pdf-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Add space between items */
+    justify-content: flex-start; /* Align items to the left */
+}
+
+/* Flex item styling (for each PDF link) */
+.pdf-item {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 150px; /* Set a fixed width for each item */
+}
+
+.pdf-item a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.pdf-item a:hover {
+    text-decoration: underline;
+}
+
+#signature-image {
+    padding: 4px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    border-radius: 4px;
+}
+button {
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 8px;
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    color: white;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #FF8E53, #FFA94D);
+    transform: scale(1.05);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.submit-button {
+    background: linear-gradient(135deg, #38b000, #70e000);
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    background: linear-gradient(135deg, #70e000, #9ef01a);
+    transform: scale(1.05);
+}
+
+.submit-button:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+button.remove {
+    font-family: 'Arial', sans-serif;
+    font-weight: normal;
+    font-size: 12px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;  /* Lighter border for a more neutral look */
+    border-radius: 16px;       /* Less rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease;  /* Simplified transition */
+    margin: 8px;
+    color: #555;  /* More neutral text color */
+    background: #f5f5f5;  /* Subtle, light background */
+}
+
+button.remove:hover {
+    background-color: #e0e0e0;  /* Slightly darker shade on hover */
+}

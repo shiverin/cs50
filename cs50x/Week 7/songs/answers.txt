@@ -1,0 +1,7 @@
+AVG (danceability)=0.71646
+AVG (valence)=0.484443
+AVg (energy)=0.65906
+
+I would characteriize their audio aura as medium.
+One limitation is that the method does not take into account of the frequency of songs played by the user. A better method would be to use a eighted average based on frequncy of songs played to calculate the averages.
+

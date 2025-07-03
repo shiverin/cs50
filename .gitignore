@@ -1,1 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Ignore SQLite database files
 *.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings folder
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Compiled C files (CS50 C projects)
+*.out
+*.o
+a.out
+
+# Python virtual environments
+env/
+venv/
+
+# Log files
+*.log
+
+# Environment variables file
+.env

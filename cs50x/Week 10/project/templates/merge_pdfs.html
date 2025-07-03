@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Merged PDFs
+{% endblock %}
+
+{% block main %}
+{% if result %}
+{% if result.status == 'success' %}
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <span>{{ result.name }}.pdf merged succesfully</span>
+        <button id="downloadBtn" class="submit-button">
+            <strong>Download Merged PDF</strong>
+        </button>
+        <form action="/cleardown" method="POST">
+            <button class="submit-button" type="submit">Merge another file?</button>
+        </form>
+    </div>
+{% elif result.status == 'error' %}
+    <p>Error: {{ result.message }}</p>
+{% endif %}
+{% endif %}
+<script>
+document.getElementById('downloadBtn').addEventListener('click', function() {
+    // Create a temporary link element
+    var link = document.createElement('a');
+    // Set the href to the download URL
+    link.href = "{{ url_for('download_file', filename=result.merged_pdf) }}";
+    // Set the download attribute with the desired file name
+    link.download = "{{ result.merged_pdf }}";
+    // Append the link to the body
+    document.body.appendChild(link);
+    // Programmatically click the link to trigger the download
+    link.click();
+    // Remove the link from the document
+    document.body.removeChild(link);
+    // Redirect to another page after initiating the download
+    window.location.href = "{{ url_for('merge') }}";
+});
+</script>
+{% endblock %}

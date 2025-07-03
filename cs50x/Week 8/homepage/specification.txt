@@ -1,0 +1,43 @@
+HTML Tags used:
+div
+h2
+figure
+figurecaption
+br
+hr
+h3
+p
+ul
+li
+span
+a
+footer
+
+CSS Tags used:
+display
+flex-direction
+flex
+justify-content
+align-items
+margin
+margin-bottom
+margin-left
+padding
+padding-top
+width
+height
+min-height
+gap
+
+font-family
+font-style
+font-size
+text-align
+list-style-type
+
+background-color
+color
+
+!important
+
+I chose to use javascript to add a clickable mouse icon that prints this is cs50 as a tribute to this course that taught me many wonderful things, i used bootstrap to implement a navbar to navigate to the other 4 pages easily, and likewise navigate back to the homepage.

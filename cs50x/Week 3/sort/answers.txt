@@ -1,0 +1,11 @@
+sort1 uses: Bubble sort
+
+How do you know?: The runtime for the sorted list is much faster than the random list. Hence, can be concluded that omega is greater than theta. 
+
+sort2 uses: Merge sort
+
+How do you know?: The increase in real time between random 10000 and 50000 is not significant. Hence, its omega is likely to be nlogn.
+
+sort3 uses: Selection sort
+
+How do you know?: Omega and theta can be deduced to be similar as the runtime for random and sorted lists are the same.

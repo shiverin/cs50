@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    {% for listing in listings %}
+        {% if forloop.counter|divisibleby:2 %}
+            <div class="container-fluid p-3 bg-dark text-white contain1">
+        {% else %}
+            <div class="container-fluid p-3 bg-light contain2">
+        {% endif %}
+                <div class="index_a">
+                {% if listing.url %}
+                    <img src="{{listing.url}}" alt="{{ listing.title }}">
+                {% else %}
+                    <img src="{% static 'auctions/place.svg' %}" alt="Default image">
+                {% endif %}
+                </div>
+                <div class="index_b">
+                <a href="{% url 'listings' listing.id %}" style="color: inherit;"><strong style="font-size: 25px;">{{ listing.title }}</strong></a>
+                    <small>Description: {{listing.description}}</small>
+                    <div><strong>Price: ${{ listing.current_price }}</strong></div>
+                    <div>Created on {{ listing.created_at}}</div>
+                </div>
+            </div>
+    {% empty %}
+        <div>Currently no listings</div>
+    {% endfor %}
+{% endblock %}

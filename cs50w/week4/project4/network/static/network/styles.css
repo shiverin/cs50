@@ -1,0 +1,28 @@
+.body {
+    margin: 10px;
+}
+
+.bigpost {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 160px;
+}
+
+.post-a {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.post-b {}
+
+#follows {
+    display: flex;
+    gap: 20px;
+}
+
+.editing {
+    height: auto !important;
+}

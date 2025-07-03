@@ -1,0 +1,48 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Merger of PDFs
+{% endblock %}
+
+{% block main %}
+<p style="color: red; font-weight: bold;">Important: Requires 2 or more files uploaded</p>
+<form action="/" method="post" enctype="multipart/form-data">
+    <label for="pdf">Upload your PDF to merge</label>
+    <input type="file" id="pdf" name="file[]" accept=".pdf" multiple required><br><br>
+    <input type="submit" value="Upload">
+</form>
+<h2>Uploaded files:</h2>
+{% if files %}
+    <div class="pdf-container">
+        {% for file in files %}
+            <div class="file-item">
+                <span>{{ loop.index }}. </span>
+                <a href="{{ url_for('uploaded_file', filename=file) }}" target="_blank">{{ file }}</a>
+                <form action="{{ url_for('delete_file', filename=file) }}" method="POST" style="display:inline;">
+                    <button class="remove" type="submit">Remove</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No Files uploaded yet.</p>
+{% endif %}
+
+{% if files | length > 1 %}
+<p></p>
+<form action="/merge_pdfs" method="POST">
+    <p>
+        <label for="merged_name">Merged PDF name: </label>
+        <input type="text" id="merged_name" name="merged_name" placeholder="merged" autocomplete="off">
+    </p>
+    <button class="submit-button" type="submit">Merge(All file(s) uploaded)</button>
+</form>
+<form action="/clearall" method="POST">
+<button style="background-color: red; color:white">
+    Clear All Files
+</button>
+</form>
+{% else %}
+<p>Upload your file(s) to start.</p>
+{% endif %}
+{% endblock %}

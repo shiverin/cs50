@@ -1,0 +1,252 @@
+{% extends "index.html" %}
+
+{% block title %}Sign d PDF{% endblock %}
+
+{% block style %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f8f9fa;
+        text-align: center;
+    }
+
+    .creative-header {
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        font-size: 48px;
+        background: linear-gradient(90deg, #FF5733, #C70039, #900C3F);
+        color: transparent;
+        -webkit-background-clip: text;
+        text-align: center;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 20px;
+    }
+
+    #pdf-container {
+        position: relative;
+        width: 80%;
+        margin: auto;
+        border: 1px solid #ccc;
+    }
+
+    #pdf-canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    #signature-canvas {
+        border: 2px solid black;
+        margin-top: 20px;
+    }
+
+    #signature-image {
+        position: absolute;
+        display: none;
+        cursor: move;
+        border: 2px dashed #666;
+        width: 200px;
+        height: 100px;
+        top: 0;
+        left: 0;
+        z-index: 10;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<h1 class="creative-header">PDF Signature</h1>
+<p style="color: red; font-weight: bold;">Important: Upload exactly ONE PDF file.</p>
+
+<form action="/" method="post" enctype="multipart/form-data">
+    <label for="pdf">Upload your PDF:</label>
+    <input type="file" id="pdf" name="file[]" accept=".pdf" required><br><br>
+    <input type="submit" value="Upload">
+</form>
+
+{% if files %}
+    <h2>Uploaded File:</h2>
+    {% for file in files %}
+        <div class="file-item">
+            <span>{{ loop.index }}.</span>
+            <a href="{{ url_for('uploaded_file', filename=file) }}" target="_blank">{{ file }}</a>
+            <form action="{{ url_for('delete_file', filename=file) }}" method="POST" style="display:inline;">
+                <button class="remove" type="submit">Remove</button>
+            </form>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No files uploaded yet.</p>
+{% endif %}
+
+{% if files | length == 1 %}
+    <button type="button" id="render-button">Render PDF</button>
+
+    <div id="pdf-container">
+        <canvas id="pdf-canvas"></canvas>
+        <img id="signature-image" src="" />
+    </div>
+
+    <p><strong>Draw your signature:</strong></p>
+    <canvas id="signature-canvas" width="400" height="150"></canvas>
+    <br>
+    <button id="clear-signature">Clear Signature</button>
+    <br><br>
+    <button id="submit-signature">Submit Signature</button>
+    <br><br>
+    <button id="increase-size">Increase Size</button>
+    <button id="decrease-size">Decrease Size</button>
+    <br><br>
+    <button id="submit-pdf" style="display:none;">Submit PDF</button>
+{% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    const signatureCanvas = document.getElementById('signature-canvas');
+    const signatureCtx = signatureCanvas.getContext('2d');
+    const pdfCanvas = document.getElementById('pdf-canvas');
+    const pdfCtx = pdfCanvas.getContext('2d');
+    const signatureImage = document.getElementById('signature-image');
+
+    let isDrawing = false;
+    let signatureDataUrl = null;
+    let isDragging = false;
+    let offsetX = 0, offsetY = 0;
+
+    // Signature drawing
+    signatureCanvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        signatureCtx.beginPath();
+        signatureCtx.moveTo(e.offsetX, e.offsetY);
+    });
+
+    signatureCanvas.addEventListener('mousemove', (e) => {
+        if (isDrawing) {
+            signatureCtx.lineTo(e.offsetX, e.offsetY);
+            signatureCtx.stroke();
+        }
+    });
+
+    signatureCanvas.addEventListener('mouseup', () => isDrawing = false);
+    signatureCanvas.addEventListener('mouseleave', () => isDrawing = false);
+
+    document.getElementById('clear-signature').addEventListener('click', () => {
+        signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+        signatureImage.style.display = 'none';
+    });
+
+    document.getElementById('submit-signature').addEventListener('click', () => {
+        signatureDataUrl = signatureCanvas.toDataURL();
+        signatureImage.src = signatureDataUrl;
+        signatureImage.style.top = "20px";
+        signatureImage.style.left = "20px";
+        signatureImage.style.width = "200px";
+        signatureImage.style.height = "100px";
+        signatureImage.style.display = "block";
+        document.getElementById('submit-pdf').style.display = "inline-block";
+    });
+
+    // Drag logic
+    signatureImage.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        const sigRect = signatureImage.getBoundingClientRect();
+        offsetX = e.clientX - sigRect.left;
+        offsetY = e.clientY - sigRect.top;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const container = document.getElementById('pdf-container');
+            const containerRect = container.getBoundingClientRect();
+
+            let x = e.clientX - containerRect.left - offsetX;
+            let y = e.clientY - containerRect.top - offsetY;
+
+            x = Math.max(0, Math.min(x, container.offsetWidth - signatureImage.offsetWidth));
+            y = Math.max(0, Math.min(y, container.offsetHeight - signatureImage.offsetHeight));
+
+            signatureImage.style.left = `${x}px`;
+            signatureImage.style.top = `${y}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => isDragging = false);
+
+    // Resize
+    document.getElementById('increase-size').addEventListener('click', () => resizeSignature(1.1));
+    document.getElementById('decrease-size').addEventListener('click', () => resizeSignature(0.9));
+
+    function resizeSignature(factor) {
+        const width = signatureImage.offsetWidth * factor;
+        const height = signatureImage.offsetHeight * factor;
+        signatureImage.style.width = `${width}px`;
+        signatureImage.style.height = `${height}px`;
+    }
+
+    // Render uploaded PDF
+    {% if files | length == 1 %}
+    const fileUrl = '/uploads/{{ files[0] }}';
+
+    document.getElementById('render-button').addEventListener('click', () => {
+        fetch(fileUrl)
+            .then(res => res.arrayBuffer())
+            .then(data => {
+                const loadingTask = pdfjsLib.getDocument({ data });
+                loadingTask.promise.then(pdf => {
+                    pdf.getPage(1).then(page => {
+                        const viewport = page.getViewport({ scale: 1.5 });
+                        pdfCanvas.width = viewport.width;
+                        pdfCanvas.height = viewport.height;
+                        const renderContext = {
+                            canvasContext: pdfCtx,
+                            viewport: viewport
+                        };
+                        page.render(renderContext);
+                    });
+                });
+            });
+    });
+
+    document.getElementById('submit-pdf').addEventListener('click', () => {
+        const pdfRect = pdfCanvas.getBoundingClientRect();
+        const sigRect = signatureImage.getBoundingClientRect();
+
+        const x = sigRect.left - pdfRect.left;
+        const y = sigRect.top - pdfRect.top;
+        const width = signatureImage.offsetWidth;
+        const height = signatureImage.offsetHeight;
+
+        const img = new Image();
+        img.src = signatureDataUrl;
+        img.onload = () => {
+            pdfCtx.drawImage(img, x, y, width, height);
+
+            const imageData = pdfCanvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [pdfCanvas.width, pdfCanvas.height]
+            });
+
+            doc.addImage(imageData, 'PNG', 0, 0, pdfCanvas.width, pdfCanvas.height);
+            doc.save('signed.pdf');
+
+            fetch('/clearall', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            }).then(res => res.json()).then(data => {
+                console.log("Server cleared uploaded file:", data.message);
+            });
+        };
+    });
+    {% endif %}
+</script>
+{% endblock %}

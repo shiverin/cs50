@@ -1,0 +1,37 @@
+body{
+    margin:0px;
+    height:100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+}
+.nav{
+    height: 10vh;
+}
+.a{
+    height: 50vh;
+    margin-bottom: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+}
+.b{
+    height: 40vh;
+}
+.but{
+    display: flex;
+    justify-content:center;
+    align-items:center;
+}
+.rec{
+    width: 40vw;
+}
+input{
+    margin: 10px;
+}
+
+.rec{
+    border-radius: 20px;
+}

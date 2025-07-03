@@ -1,0 +1,79 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2>All Posts</h2>
+
+    {% if user.is_authenticated %}
+        <div class="border rounded p-3" style="border-color: lightgray;">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="content" class="form-label"><b>New Post</b></label>
+                    <textarea class="form-control" name="content" rows="2" placeholder="" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
+        </div>
+    {% endif %}
+
+    {% for post in posts %}
+        <div class="border rounded p-3 bigpost" id="bigpost-{{ post.id }}" style="border-color: lightgray;">
+            <div class="post-a">
+                <a href="{% url 'profile' post.user %}" style="font-size: 24px; color: black;"><b>{{ post.user }}</b></a>
+                {% if post.user == request.user %}
+                    <button class="btn btn-sm btn-outline-secondary edit-btn" onclick="startEdit({{ post.id }})">Edit</button>
+                {% endif %}
+            </div>
+            <div class="post-b" id="post-body-{{ post.id }}">
+                <div class="post-content">{{post.body}}</div>
+                <div style="color: grey;">{{post.timestamp}}</div>
+                {% if post.liked %}
+                    <div>
+                        <span class="heart" style="color: red;cursor:pointer;" onclick="likePost({{ post.id }})">&#9829;</span>
+                        <span style="color: grey">{{post.likes_count}}</span>
+                    </div>
+
+                {% else %}
+                    <div>
+                        <span class="heart" style="color: transparent; -webkit-text-stroke: 1px black; cursor:pointer;" onclick="likePost({{ post.id }})">&#9829;</span>
+                        <span style="color: grey">{{post.likes_count}}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        No post yet
+    {% endfor %}
+    <hr>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            {% if posts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">
+                    Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+      {% block scripts %}
+          <script src="{% static 'network/index.js' %}"></script>
+      {% endblock %}
+
+{% endblock %}

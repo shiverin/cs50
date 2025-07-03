@@ -1,0 +1,54 @@
+body{
+    margin:0px;
+    height:100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+}
+.nav{
+    height: 10vh;
+}
+.con{
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+        width: 100vw;
+}
+.aa{
+    width: 60vw;
+    padding: 40px;
+}
+
+.bb{
+    width: 40vw;
+}
+.ff{
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+
+}
+.b{
+    height: 90vh;
+}
+.line{
+    display: flex;
+        justify-content:space-between;
+        padding:5px;
+}
+input{
+    width: 400px;
+}
+button{
+    width: 200px;
+}
+.left{
+    width:60vw;
+    display: flex;
+    justify-content:flex-end;
+}
+.blue {
+    background-color: #4285F4;
+    color: white;
+}

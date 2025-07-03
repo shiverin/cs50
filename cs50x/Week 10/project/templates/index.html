@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- http://getbootstrap.com/docs/5.3/ -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+        <link href="/static/styles.css" rel="stylesheet">
+
+        <title>{% block title %}PDFile Edit{% endblock %}</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11/dist/interact.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        {% block style %}{% endblock %}
+    </head>
+
+    <body>
+
+        <nav class="bg-light border navbar navbar-expand-md navbar-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/"><span class="blue">P</span><span class="red">D</span><span class="yellow">F</span><span class="green">il</span><span class="red">Edit</span></a>
+                <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar">
+                        <ul class="navbar-nav me-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/merge">Merge</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/signature">Signature</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/extract">Extract</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/convert">Convert</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/zip">Zip</a></li>
+
+
+                        </ul>
+                        <ul class="navbar-nav ms-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/"></a></li>
+                        </ul>
+                </div>
+            </div>
+        </nav>
+
+        {% if get_flashed_messages() %}
+            <header>
+                <div class="alert alert-primary mb-0 text-center" role="alert">
+                    <span>{{ get_flashed_messages() | join(" ") }}</span>
+                    <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            </header>
+        {% endif %}
+
+        <main class="container py-5 text-center">
+            {% block main %}
+            <form action="/" method="post" enctype="multipart/form-data">
+                <label for="pdf">Upload your PDF:</label>
+                <input type="file" id="pdf" name="file[]" accept=".pdf" multiple required><br><br>
+
+                <input type="submit" value="Upload">
+            </form>
+
+            <h2>Uploaded files:</h2>
+            {% if files %}
+                <div class="pdf-container">
+                    {% for file in files %}
+                        <div class="file-item">
+                            <span>{{ loop.index }}. </span>
+                            <a href="{{ url_for('uploaded_file', filename=file) }}" target="_blank">{{ file }}</a>
+                            <form action="{{ url_for('delete_file', filename=file) }}" method="POST" style="display:inline;">
+                                <button class="remove" type="submit">Remove</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No Files uploaded yet.</p>
+            {% endif %}
+            <p></p>
+            {% if files | length > 1 %}
+            <form action="/merge_pdfs" method="POST">
+                <button class="submit-button" type="submit">I want to Merge(All file(s) uploaded)</button>
+            </form>
+            <form action="/clearall" method="POST">
+            <button style="background-color: red; color:white">
+                Clear All Files
+            </button>
+            </form>
+            {% elif files | length == 1 %}
+            <form id="file-form" action="/" method="POST">
+                <label for="file-options">Select Option:</label>
+                <select id="file-options" name="file-option" onchange="updateFormAction()">
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="signature">Signature</option>
+                    <option value="extract">Extract</option>
+                    <option value="convert">Convert</option>
+                </select>
+                <button class="submit-button" type="submit">Ready (All file(s) uploaded)</button>
+            </form>
+            <form action="/clearall" method="POST">
+            <button style="background-color: red; color:white">
+                Clear All Files
+            </button>
+            </form>
+            {% else %}
+            <p>Upload your file(s) to start.</p>
+            {% endif %}
+            {% endblock %}
+
+        </main>
+        <script>
+            function updateFormAction() {
+                const form = document.getElementById('file-form');
+                const selectedOption = document.getElementById('file-options').value;
+
+                if (selectedOption) {
+                    form.action = `/${selectedOption}`;
+                }
+            }
+        </script>
+        </footer>
+        <footer style="text-align: center; padding: 10px; background-color: #f1f1f1; margin-top: 20px;">
+            <p style="margin-bottom: 0px;">&copy; Shizhen Zhao 2025. All Rights Reserved.</p>
+        </footer>
+    </body>
+
+
+</html>

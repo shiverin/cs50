@@ -1,0 +1,25 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia
+{% endblock %}
+{% block body %}
+    <h1>
+        Edit <span style="color: blue;">{{title}}</span>
+    </h1>
+<form autocomplete="off" method="post" class="p-3">
+    {% csrf_token %}
+    <div class="form-group mb-3">
+        <label for="body">Content</label>
+        <textarea
+            name="newbody"
+            id="body"
+            class="form-control"
+            placeholder="Enter content"
+            rows="6"
+            required
+        >{{body}}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Edit</button>
+</form>
+{% endblock %}
