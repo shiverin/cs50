@@ -1,2 +1,3 @@
 # cs50
-archive of my courses
+An archive of my cs50 completed courses
+feel free to look through them!
